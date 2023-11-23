@@ -1,5 +1,7 @@
 import { Schema, model } from 'mongoose';
 import { Product, User } from './user.interface';
+import bcrypt from 'bcrypt';
+import config from '../../config';
 
 const productSchema = new Schema<Product>({
   productName: { type: String, required: true },
@@ -27,4 +29,23 @@ const userSchema = new Schema<User>({
   orders: [{ type: productSchema, required: false }],
 });
 
-export const UserModel = model<User>('User', userSchema)
+// pre save middleware
+userSchema.pre('save', async function (next) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  const user = this; // doc
+  // hashing password and save into DB
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.bcrypt_salt_rounds),
+  );
+  next();
+});
+
+// post save middleware / hook
+userSchema.post('save', function (doc, next) {
+  doc.password = '';
+  
+  next();
+});
+
+export const UserModel = model<User>('User', userSchema);
