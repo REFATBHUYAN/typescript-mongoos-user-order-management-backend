@@ -1,4 +1,4 @@
-import { Schema, model, connect } from 'mongoose';
+import { Schema, model } from 'mongoose';
 import { Product, User } from './user.interface';
 
 const productSchema = new Schema<Product>({
@@ -26,3 +26,5 @@ const userSchema = new Schema<User>({
   },
   orders: [{ type: productSchema, required: false }],
 });
+
+export const UserModel = model<User>('User', userSchema)
