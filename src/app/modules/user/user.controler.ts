@@ -11,8 +11,27 @@ const createUser = async (req: Request, res: Response) => {
     const userParseData = UserValidationSchema.parse(user);
 
     const result = await UserServices.createUserIntoDB(userParseData);
-    const {userId, username, password, fullName,age, email,isActive,hobbies,address} = result;
-    const allData = {userId, username, fullName,age, email,isActive,hobbies,address}
+    const {
+      userId,
+      username,
+      password,
+      fullName,
+      age,
+      email,
+      isActive,
+      hobbies,
+      address,
+    } = result;
+    const allData = {
+      userId,
+      username,
+      fullName,
+      age,
+      email,
+      isActive,
+      hobbies,
+      address,
+    };
 
     res.status(200).json({
       success: true,
@@ -26,8 +45,7 @@ const createUser = async (req: Request, res: Response) => {
 
 const allUser = async (req: Request, res: Response) => {
   try {
-
-    const result  = await UserServices.getUserFromDB();
+    const result = await UserServices.getUserFromDB();
     // const {username, fullName, age, email, address}: any = result;
     // const getUser = {username, fullName, age, email, address};
 
@@ -41,7 +59,68 @@ const allUser = async (req: Request, res: Response) => {
   }
 };
 
+const getSingleUser = async (req: Request, res: Response) => {
+  try {
+    const userId = parseInt(req.params.userId);
+
+    const result = await UserServices.getSingleUserFromDB(userId);
+
+    if (result.length === 0) {
+      res.status(200).json({
+        success: false,
+        message: 'User not found',
+        error: {
+          code: 404,
+          description: 'User not found!',
+        },
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        message: 'User  fetched  successfully!',
+        data: result,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+const updateSingleUser = async (req: Request, res: Response) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    const data = req.body;
+
+    const result = await UserServices.updateUserIntoDB(data, userId);
+    // res.status(200).json({
+    //   success: true,
+    //   message: 'User  fetched  successfully!',
+    //   data: result,
+    // });
+
+    if (result === null) {
+      res.status(200).json({
+        success: false,
+        message: 'User not found',
+        error: {
+          code: 404,
+          description: 'User not found!',
+        },
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        message: 'User  fetched  successfully!',
+        data: result,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const UserControler = {
   createUser,
   allUser,
+  getSingleUser,
+  updateSingleUser,
 };

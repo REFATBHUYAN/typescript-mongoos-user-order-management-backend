@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { Product, User } from './user.interface';
+import { Product, User,  UserMod } from './user.interface';
 import bcrypt from 'bcrypt';
 import config from '../../config';
 
@@ -9,7 +9,7 @@ const productSchema = new Schema<Product>({
   quantity: { type: Number, required: true },
 });
 
-const userSchema = new Schema<User>({
+const userSchema = new Schema<User, UserMod>({
   userId: { type: Number, required: true },
   username: { type: String, required: true },
   password: { type: String, required: true },
@@ -48,4 +48,10 @@ userSchema.post('save', function (doc, next) {
   next();
 });
 
-export const UserModel = model<User>('User', userSchema);
+
+userSchema.statics.isUserExists = async function (userId: Number) {
+  const existingUser = await UserModel.findOne({ userId });
+  return existingUser;
+};
+
+export const UserModel = model<User, UserMod>('User', userSchema);
