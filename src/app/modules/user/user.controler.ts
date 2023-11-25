@@ -7,7 +7,6 @@ const createUser = async (req: Request, res: Response) => {
   try {
     const user = req.body;
 
-    // zod validation data
     const userParseData = UserValidationSchema.parse(user);
 
     const result = await UserServices.createUserIntoDB(userParseData);
@@ -183,23 +182,6 @@ const getSingleUserOrderSum = async (req: Request, res: Response) => {
       message: 'User  fetched  successfully!',
       data: result[0],
     });
-
-    // if (result > 0) {
-    //   res.status(200).json({
-    //     success: false,
-    //     message: 'Order not found',
-    //     error: {
-    //       code: 404,
-    //       description: 'User not found!',
-    //     },
-    //   });
-    // } else {
-    //   res.status(200).json({
-    //     success: true,
-    //     message: 'User  fetched  successfully!',
-    //     data: result[0],
-    //   });
-    // }
   } catch (error) {
     console.log(error);
   }
