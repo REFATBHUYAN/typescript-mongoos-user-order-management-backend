@@ -11,32 +11,11 @@ const createUser = async (req: Request, res: Response) => {
     const userParseData = UserValidationSchema.parse(user);
 
     const result = await UserServices.createUserIntoDB(userParseData);
-    const {
-      userId,
-      username,
-      password,
-      fullName,
-      age,
-      email,
-      isActive,
-      hobbies,
-      address,
-    } = result;
-    const allData = {
-      userId,
-      username,
-      fullName,
-      age,
-      email,
-      isActive,
-      hobbies,
-      address,
-    };
 
     res.status(200).json({
       success: true,
       message: 'User created successfully!',
-      data: allData,
+      data: result,
     });
   } catch (error) {
     console.log(error);
@@ -91,11 +70,6 @@ const updateSingleUser = async (req: Request, res: Response) => {
     const data = req.body;
 
     const result = await UserServices.updateUserIntoDB(data, userId);
-    // res.status(200).json({
-    //   success: true,
-    //   message: 'User  fetched  successfully!',
-    //   data: result,
-    // });
 
     if (result === null) {
       res.status(200).json({
@@ -117,10 +91,127 @@ const updateSingleUser = async (req: Request, res: Response) => {
     console.log(error);
   }
 };
+const deleteSingleUser = async (req: Request, res: Response) => {
+  try {
+    const userId = parseInt(req.params.userId);
+
+    const result = await UserServices.deleteSingleUserFromDB(userId);
+    
+    if (result.deletedCount === 0) {
+      res.status(200).json({
+        success: false,
+        message: 'User not found',
+        error: {
+          code: 404,
+          description: 'User not found!',
+        },
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        message: 'User  fetched  successfully!',
+        data: null,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const putSingleOrder = async (req: Request, res: Response) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    const data = req.body;
+
+    const result = await UserServices.putSingeOrderIntoDB(data, userId);
+
+    if (result.modifiedCount === 0) {
+      res.status(200).json({
+        success: false,
+        message: 'User not found',
+        error: {
+          code: 404,
+          description: 'User not found!',
+        },
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        message: 'Order created successfully!',
+        data: null,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const getSingleUserOrder = async (req: Request, res: Response) => {
+  try {
+    const userId = parseInt(req.params.userId);
+
+    const result = await UserServices.getSingleOrderFromDB(userId);
+
+    if (result.length === 0) {
+      res.status(200).json({
+        success: false,
+        message: 'Order not found',
+        error: {
+          code: 404,
+          description: 'User not found!',
+        },
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        message: 'User  fetched  successfully!',
+        data: result[0],
+      });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+const getSingleUserOrderSum = async (req: Request, res: Response) => {
+  try {
+    const userId = parseInt(req.params.userId);
+
+    const result = await UserServices.getSingleOrderSumFromDB(userId);
+   
+    res.status(200).json({
+      success: true,
+      message: 'User  fetched  successfully!',
+      data: result[0],
+    });
+
+    // if (result > 0) {
+    //   res.status(200).json({
+    //     success: false,
+    //     message: 'Order not found',
+    //     error: {
+    //       code: 404,
+    //       description: 'User not found!',
+    //     },
+    //   });
+    // } else {
+    //   res.status(200).json({
+    //     success: true,
+    //     message: 'User  fetched  successfully!',
+    //     data: result[0],
+    //   });
+    // }
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 export const UserControler = {
   createUser,
   allUser,
   getSingleUser,
   updateSingleUser,
+  deleteSingleUser,
+  putSingleOrder,
+  getSingleUserOrder,
+  getSingleUserOrderSum
 };
